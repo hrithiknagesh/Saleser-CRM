@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Card3D from './components/Card3D';
 import Scene3D from './components/Scene3D';
 import { useTheme } from './ThemeContext';
+import { fetchDashboardData } from './api';
 
 const DashboardContent = () => {
   const [data, setData] = useState<any>(null);
@@ -14,8 +15,7 @@ const DashboardContent = () => {
   const { isDark } = useTheme();
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/dashboard')
-      .then(res => res.json())
+    fetchDashboardData()
       .then(d => setData(d))
       .catch(err => console.error("Error fetching data:", err));
   }, []);
