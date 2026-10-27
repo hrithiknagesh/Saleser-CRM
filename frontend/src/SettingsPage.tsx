@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Settings, Bell, Users, Save, Plus, Trash2, X, Check, User, Mail, Smartphone, BarChart2, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from './ThemeContext';
+import { INITIAL_DATA } from './api';
 
 interface TeamMember {
   id: string;
@@ -109,9 +110,8 @@ export default function SettingsPage() {
         },
         teamMembers: Array.isArray(data.teamMembers) ? data.teamMembers : [],
       });
-    } catch (err) {
-      setErrorMsg('Failed to load settings');
-      console.error(err);
+    } catch {
+      setSettings(INITIAL_DATA.settings as any);
     } finally {
       setLoading(false);
     }

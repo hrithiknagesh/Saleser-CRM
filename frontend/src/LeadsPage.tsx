@@ -13,6 +13,7 @@ import {
   Mail,
   Phone,
 } from 'lucide-react';
+import { fetchLeads, INITIAL_DATA } from './api';
 
 interface Lead {
   id: number;
@@ -61,21 +62,21 @@ export default function LeadsPage() {
   const [form, setForm] = useState<FormData>({ ...emptyForm });
 
   /* ─── Fetch ─── */
-  const fetchLeads = useCallback(async () => {
+  const fetchLeadsData = useCallback(async () => {
     try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      setLeads(Array.isArray(data) ? data : data.leads ?? []);
+      const data = await fetchLeads();
+      setLeads(Array.isArray(data) ? data : (data as any)?.leads ?? INITIAL_DATA.leads);
     } catch (err) {
       console.error('Failed to fetch leads', err);
+      setLeads(INITIAL_DATA.leads);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchLeads();
-  }, [fetchLeads]);
+    fetchLeadsData();
+  }, [fetchLeadsData]);
 
   /* ─── Filter ─── */
   const filtered = leads.filter((l) => {

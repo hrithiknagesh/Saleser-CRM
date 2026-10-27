@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { BarChart3, TrendingUp, DollarSign, Target, Award, Download, RefreshCw } from 'lucide-react';
 import Card3D from './components/Card3D';
 import IsometricBar3D from './components/IsometricBar3D';
+import { fetchReportsData } from './api';
 
 export default function ReportsPage() {
   const [reportData, setReportData] = useState<any>(null);
@@ -10,8 +11,7 @@ export default function ReportsPage() {
 
   const fetchReports = () => {
     setLoading(true);
-    fetch('http://localhost:3000/api/reports')
-      .then(res => res.json())
+    fetchReportsData()
       .then(data => {
         setReportData(data);
         setLoading(false);

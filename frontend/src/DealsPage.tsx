@@ -13,6 +13,7 @@ import {
   Check
 } from 'lucide-react';
 import Card3D from './components/Card3D';
+import { fetchDeals as apiFetchDeals, INITIAL_DATA } from './api';
 
 const STAGES = ['New', 'Qualified', 'Proposal Sent', 'Negotiation', 'Closed Won'];
 
@@ -41,10 +42,12 @@ export default function DealsPage() {
   });
 
   const fetchDeals = () => {
-    fetch('http://localhost:3000/api/deals')
-      .then(res => res.json())
-      .then(data => setDeals(data))
-      .catch(err => console.error('Error fetching deals:', err));
+    apiFetchDeals()
+      .then(data => setDeals(Array.isArray(data) ? data : INITIAL_DATA.deals))
+      .catch(err => {
+        console.error('Error fetching deals:', err);
+        setDeals(INITIAL_DATA.deals);
+      });
   };
 
   useEffect(() => {

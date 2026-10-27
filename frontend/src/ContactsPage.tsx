@@ -10,6 +10,7 @@ import {
   X,
   Search,
 } from "lucide-react";
+import { INITIAL_DATA } from "./api";
 
 const API_BASE = "http://localhost:3000/api/contacts";
 
@@ -450,9 +451,9 @@ export default function ContactsPage() {
       const res = await fetch(API_BASE);
       if (!res.ok) throw new Error("Failed to fetch contacts");
       const data = await res.json();
-      setContacts(Array.isArray(data) ? data : data.data ?? []);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+      setContacts(Array.isArray(data) ? data : data.data ?? INITIAL_DATA.contacts);
+    } catch {
+      setContacts(INITIAL_DATA.contacts);
     } finally {
       setLoading(false);
     }

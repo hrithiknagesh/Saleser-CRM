@@ -10,6 +10,7 @@ import {
   Filter,
   ChevronDown,
 } from "lucide-react";
+import { INITIAL_DATA } from "./api";
 
 interface Account {
   id: number;
@@ -53,9 +54,9 @@ export default function AccountsPage() {
     try {
       const res = await fetch(API_URL);
       const data = await res.json();
-      setAccounts(data);
-    } catch (err) {
-      console.error("Failed to fetch accounts:", err);
+      setAccounts(Array.isArray(data) ? data : (INITIAL_DATA.accounts as any));
+    } catch {
+      setAccounts(INITIAL_DATA.accounts as any);
     } finally {
       setLoading(false);
     }

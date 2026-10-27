@@ -15,6 +15,7 @@ import {
   Check
 } from 'lucide-react';
 import Card3D from './components/Card3D';
+import { fetchTasks as apiFetchTasks, INITIAL_DATA } from './api';
 
 interface Task {
   id: number;
@@ -53,14 +54,14 @@ const TasksPage = () => {
   const [formData, setFormData] = useState<Omit<Task, 'id'>>(emptyTaskForm);
 
   const fetchTasks = () => {
-    fetch('http://localhost:3000/api/tasks')
-      .then(res => res.json())
-      .then((data: Task[]) => {
-        setTasks(data);
+    apiFetchTasks()
+      .then((data: any) => {
+        setTasks(Array.isArray(data) ? data : (INITIAL_DATA.tasks as any));
         setLoading(false);
       })
       .catch(err => {
         console.error("Error fetching tasks:", err);
+        setTasks(INITIAL_DATA.tasks as any);
         setLoading(false);
       });
   };

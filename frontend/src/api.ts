@@ -80,8 +80,6 @@ function setLocalStore<T>(key: string, val: T): void {
 
 // Universal fetch helper with fallback
 export async function apiFetch<T>(endpoint: string, options?: RequestInit, fallbackData?: T): Promise<T> {
-  // If we are on an https origin (like Netlify) and API_BASE is http://localhost:3000,
-  // browsers will block the request immediately (Mixed Content).
   const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
   const isLocalHost = API_BASE.includes('localhost') || API_BASE.includes('127.0.0.1');
 
@@ -167,6 +165,21 @@ export async function fetchContacts() {
 export async function fetchAccounts() {
   const local = getLocalStore('accounts', INITIAL_DATA.accounts);
   return apiFetch('/accounts', undefined, local);
+}
+
+// Reports
+export async function fetchReportsData() {
+  const fallback = {
+    dealsByStage: { Qualified: 2, "Proposal Sent": 2, New: 1, "Closed Won": 1 },
+    revenueByStage: { Qualified: 47000, "Proposal Sent": 73000, New: 8500, "Closed Won": 12000 },
+    leadsBySource: { Website: 2, Referral: 1, "Cold Call": 1, Event: 1, LinkedIn: 1 },
+    leadsByStage: { Qualified: 2, "Proposal Sent": 2, "New Lead": 2 },
+    tasksByStatus: { Pending: 4, Completed: 1, "In Progress": 1 },
+    tasksByPriority: { High: 3, Medium: 2, Low: 1 },
+    topDeals: INITIAL_DATA.deals.slice(0, 5),
+    performanceByRep: { "Sarah K.": 27000, "John D.": 45000, "Emily R.": 28000 }
+  };
+  return apiFetch('/reports', undefined, fallback);
 }
 
 // Settings
