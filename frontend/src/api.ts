@@ -169,16 +169,68 @@ export async function fetchAccounts() {
 
 // Reports
 export async function fetchReportsData() {
+  const deals = getLocalStore('deals', INITIAL_DATA.deals);
+  const leads = getLocalStore('leads', INITIAL_DATA.leads);
+  const tasks = getLocalStore('tasks', INITIAL_DATA.tasks);
+
+  const dealsByStage: Record<string, number> = {};
+  deals.forEach((d: any) => { dealsByStage[d.stage] = (dealsByStage[d.stage] || 0) + 1; });
+
+  const revenueByStage: Record<string, number> = {};
+  deals.forEach((d: any) => { revenueByStage[d.stage] = (revenueByStage[d.stage] || 0) + (d.amount || 0); });
+
+  const leadsBySource: Record<string, number> = {};
+  leads.forEach((l: any) => { leadsBySource[l.source] = (leadsBySource[l.source] || 0) + 1; });
+
+  const leadsByStage: Record<string, number> = {};
+  leads.forEach((l: any) => { leadsByStage[l.stage] = (leadsByStage[l.stage] || 0) + 1; });
+
+  const tasksByStatus: Record<string, number> = {};
+  tasks.forEach((t: any) => { tasksByStatus[t.status] = (tasksByStatus[t.status] || 0) + 1; });
+
+  const tasksByPriority: Record<string, number> = {};
+  tasks.forEach((t: any) => { tasksByPriority[t.priority] = (tasksByPriority[t.priority] || 0) + 1; });
+
+  const topDeals = [...deals].sort((a: any, b: any) => (b.amount || 0) - (a.amount || 0)).slice(0, 5);
+
+  const performanceByRep: Record<string, number> = {};
+  deals.filter((d: any) => d.stage === 'Closed Won').forEach((d: any) => {
+    const lead = leads.find((l: any) => l.company === d.company);
+    const rep = lead ? lead.assignee : 'Sarah K.';
+    performanceByRep[rep] = (performanceByRep[rep] || 0) + (d.amount || 0);
+  });
+  if (Object.keys(performanceByRep).length === 0) {
+    performanceByRep['Sarah K.'] = 27000;
+    performanceByRep['John D.'] = 45000;
+    performanceByRep['Emily R.'] = 28000;
+  }
+
+  const totalRevenue = deals.filter((d: any) => d.stage === 'Closed Won').reduce((s: number, d: any) => s + (d.amount || 0), 0) || 128000;
+  const pipelineValue = deals.filter((d: any) => d.stage !== 'Closed Won' && d.stage !== 'Closed Lost').reduce((s: number, d: any) => s + (d.amount || 0), 0) || 140500;
+  const avgDealSize = deals.length > 0 ? Math.round(deals.reduce((s: number, d: any) => s + (d.amount || 0), 0) / deals.length) : 23416;
+  const winRate = deals.length > 0 ? Math.round((deals.filter((d: any) => d.stage === 'Closed Won').length / deals.length) * 100) : 68;
+
   const fallback = {
-    dealsByStage: { Qualified: 2, "Proposal Sent": 2, New: 1, "Closed Won": 1 },
-    revenueByStage: { Qualified: 47000, "Proposal Sent": 73000, New: 8500, "Closed Won": 12000 },
-    leadsBySource: { Website: 2, Referral: 1, "Cold Call": 1, Event: 1, LinkedIn: 1 },
-    leadsByStage: { Qualified: 2, "Proposal Sent": 2, "New Lead": 2 },
-    tasksByStatus: { Pending: 4, Completed: 1, "In Progress": 1 },
-    tasksByPriority: { High: 3, Medium: 2, Low: 1 },
-    topDeals: INITIAL_DATA.deals.slice(0, 5),
-    performanceByRep: { "Sarah K.": 27000, "John D.": 45000, "Emily R.": 28000 }
+    summary: {
+      totalLeads: leads.length,
+      totalDeals: deals.length,
+      totalContacts: INITIAL_DATA.contacts.length,
+      totalAccounts: INITIAL_DATA.accounts.length,
+      totalRevenue,
+      pipelineValue,
+      avgDealSize,
+      winRate
+    },
+    dealsByStage: Object.keys(dealsByStage).length > 0 ? dealsByStage : { Qualified: 2, "Proposal Sent": 2, New: 1, "Closed Won": 1 },
+    revenueByStage: Object.keys(revenueByStage).length > 0 ? revenueByStage : { Qualified: 47000, "Proposal Sent": 73000, New: 8500, "Closed Won": 12000 },
+    leadsBySource: Object.keys(leadsBySource).length > 0 ? leadsBySource : { Website: 2, Referral: 1, "Cold Call": 1, Event: 1, LinkedIn: 1 },
+    leadsByStage: Object.keys(leadsByStage).length > 0 ? leadsByStage : { Qualified: 2, "Proposal Sent": 2, "New Lead": 2 },
+    tasksByStatus: Object.keys(tasksByStatus).length > 0 ? tasksByStatus : { Pending: 4, Completed: 1, "In Progress": 1 },
+    tasksByPriority: Object.keys(tasksByPriority).length > 0 ? tasksByPriority : { High: 3, Medium: 2, Low: 1 },
+    topDeals: topDeals.length > 0 ? topDeals : INITIAL_DATA.deals.slice(0, 5),
+    performanceByRep
   };
+
   return apiFetch('/reports', undefined, fallback);
 }
 
@@ -189,3 +241,4 @@ export async function fetchSettings() {
 }
 
 export { API_BASE, getLocalStore, setLocalStore, INITIAL_DATA };
+
