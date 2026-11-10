@@ -41,10 +41,10 @@ const DashboardContent = () => {
   const stageBadgeBg = isDark ? 'bg-[#242424] border-[#333]' : 'bg-slate-100 border-slate-300';
 
   return (
-    <div className={`p-6 h-full overflow-y-auto transition-colors duration-300 ${pageBg}`}>
+    <div className={`p-4 md:p-6 h-full overflow-y-auto transition-colors duration-300 ${pageBg}`}>
       {/* Top Bar: Tabs & Actions */}
-      <div className="flex items-center justify-between mb-6">
-        <div className={`flex gap-6 border-b pb-2 ${tabBorder}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <div className={`flex gap-4 md:gap-6 border-b pb-2 ${tabBorder}`}>
           {['overview', 'leads', 'sales'].map(tab => (
             <span
               key={tab}
@@ -53,7 +53,7 @@ const DashboardContent = () => {
                 else if (tab === 'sales') navigate('/deals');
                 else setActiveTab(tab);
               }}
-              className={`cursor-pointer capitalize transition-colors ${
+              className={`cursor-pointer capitalize transition-colors text-sm md:text-base ${
                 activeTab === tab
                   ? `${headingText} font-medium border-b-2 border-[#f95e26] pb-2 -mb-[9px]`
                   : `${subText} hover:text-gray-300`
@@ -63,7 +63,7 @@ const DashboardContent = () => {
             </span>
           ))}
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setShowScene3D(!showScene3D)}
             className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border transition-all btn-3d ${
@@ -73,10 +73,11 @@ const DashboardContent = () => {
             }`}
           >
             <Sparkles size={14} />
-            <span>{showScene3D ? '3D Orbit: On' : '3D Orbit: Off'}</span>
+            <span className="hidden sm:inline">{showScene3D ? '3D Orbit: On' : '3D Orbit: Off'}</span>
+            <span className="sm:hidden">3D</span>
           </button>
           <button onClick={() => navigate('/reports')} className={`flex items-center gap-2 text-sm px-3 py-1.5 rounded border btn-3d ${actionBtnCls}`}>
-            <Filter size={14} /> Analytics
+            <Filter size={14} /><span className="hidden sm:inline">Analytics</span>
           </button>
           <button onClick={() => {
             const csv = "Metric,Value\n" +
@@ -90,7 +91,7 @@ const DashboardContent = () => {
             a.download = 'dashboard_export.csv';
             a.click();
           }} className={`flex items-center gap-2 text-sm px-3 py-1.5 rounded border btn-3d ${actionBtnCls}`}>
-            <Download size={14} /> Export
+            <Download size={14} /><span className="hidden sm:inline">Export</span>
           </button>
         </div>
       </div>
@@ -101,16 +102,16 @@ const DashboardContent = () => {
       )}
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
         <KpiCard isDark={isDark} title="Total Leads" value={data.totalLeads} change="+5% this month" changeType="positive" onClick={() => navigate('/leads')} />
         <KpiCard isDark={isDark} title="Deals in Pipeline" value={data.dealsInPipeline} change={`worth $${Math.round(data.revenueForecast / 1000)}K`} changeType="neutral" onClick={() => navigate('/deals')} />
         <KpiCard isDark={isDark} title="Revenue Forecast" value={`$${(data.revenueForecast / 1000000).toFixed(1)}M`} change="+9% this quarter" changeType="positive" onClick={() => navigate('/reports')} />
         <KpiCard isDark={isDark} title="Closed Targets" value={`$${Math.round(data.closedTargets / 1000)}K`} change="+72% this month" changeType="positive" onClick={() => navigate('/reports')} />
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         {/* Pipeline Overview */}
-        <div className={`col-span-2 rounded-lg p-5 border transition-colors duration-300 ${cardBg} ${cardBorder}`}>
+        <div className={`col-span-1 lg:col-span-2 rounded-lg p-5 border transition-colors duration-300 ${cardBg} ${cardBorder}`}>
           <div className="flex justify-between items-center mb-6">
             <h3 className={`font-medium ${headingText}`}>Pipeline Overview</h3>
             <div className="flex gap-2">
@@ -161,9 +162,9 @@ const DashboardContent = () => {
 
       {/* Recent Leads */}
       <div className={`rounded-lg p-5 border transition-colors duration-300 ${cardBg} ${cardBorder}`}>
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <h3 className={`font-medium ${headingText}`}>Recent Leads Added</h3>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2">
             <div className="relative">
               <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${subText}`} size={14} />
               <input
@@ -171,7 +172,7 @@ const DashboardContent = () => {
                 placeholder="Search leads..."
                 value={recentSearch}
                 onChange={e => setRecentSearch(e.target.value)}
-                className={`text-xs rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#f95e26] w-48 border transition-colors ${searchInputBg}`}
+                className={`text-xs rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#f95e26] w-40 sm:w-48 border transition-colors ${searchInputBg}`}
               />
             </div>
             <button onClick={() => navigate('/leads')} className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border btn-3d transition-colors ${actionBtnCls}`}>

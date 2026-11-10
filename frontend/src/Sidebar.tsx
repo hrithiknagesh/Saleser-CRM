@@ -22,7 +22,12 @@ import {
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
-const Sidebar = () => {
+interface SidebarProps {
+  mobileOpen?: boolean;
+  onClose?: () => void;
+}
+
+const Sidebar = ({ mobileOpen = false, onClose }: SidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -48,7 +53,12 @@ const Sidebar = () => {
 
   return (
     <>
-      <div className="w-64 bg-[#1f1f1f] h-screen flex flex-col justify-between border-r border-[#333] p-4 font-sans text-sm select-none">
+      <div className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-[#1f1f1f] h-screen flex flex-col justify-between border-r border-[#333] p-4 font-sans text-sm select-none
+        transition-transform duration-300 ease-in-out
+        ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
+        md:translate-x-0 md:static md:flex md:flex-shrink-0
+      `}>
         <div className="overflow-y-auto">
           <div className="flex items-center gap-2.5 mb-8 mt-2 px-2">
             <div className="w-7 h-7 bg-[#f95e26] rounded-xl flex items-center justify-center text-white font-extrabold text-xs shadow-3d-orange">
@@ -58,15 +68,15 @@ const Sidebar = () => {
           </div>
 
           <nav className="flex flex-col gap-1">
-            <NavItem to="/" icon={<LayoutDashboard size={18} />} label="Dashboard" active={location.pathname === '/'} />
-            <NavItem to="/leads" icon={<Users size={18} />} label="Leads" active={location.pathname === '/leads'} />
-            <NavItem to="/deals" icon={<Briefcase size={18} />} label="Deals" active={location.pathname === '/deals'} />
-            <NavItem to="/contacts" icon={<UserSquare2 size={18} />} label="Contacts" active={location.pathname === '/contacts'} />
-            <NavItem to="/accounts" icon={<Users size={18} />} label="Accounts" active={location.pathname === '/accounts'} />
-            <NavItem to="/tasks" icon={<FileText size={18} />} label="Tasks" active={location.pathname === '/tasks'} />
-            <NavItem to="/reports" icon={<BarChart3 size={18} />} label="Reports" active={location.pathname === '/reports'} />
-            <NavItem to="/profile" icon={<User size={18} />} label="My Profile" active={location.pathname === '/profile'} />
-            <NavItem to="/settings" icon={<Settings size={18} />} label="Settings" active={location.pathname === '/settings'} />
+            <NavItem to="/" icon={<LayoutDashboard size={18} />} label="Dashboard" active={location.pathname === '/'} onClose={onClose} />
+            <NavItem to="/leads" icon={<Users size={18} />} label="Leads" active={location.pathname === '/leads'} onClose={onClose} />
+            <NavItem to="/deals" icon={<Briefcase size={18} />} label="Deals" active={location.pathname === '/deals'} onClose={onClose} />
+            <NavItem to="/contacts" icon={<UserSquare2 size={18} />} label="Contacts" active={location.pathname === '/contacts'} onClose={onClose} />
+            <NavItem to="/accounts" icon={<Users size={18} />} label="Accounts" active={location.pathname === '/accounts'} onClose={onClose} />
+            <NavItem to="/tasks" icon={<FileText size={18} />} label="Tasks" active={location.pathname === '/tasks'} onClose={onClose} />
+            <NavItem to="/reports" icon={<BarChart3 size={18} />} label="Reports" active={location.pathname === '/reports'} onClose={onClose} />
+            <NavItem to="/profile" icon={<User size={18} />} label="My Profile" active={location.pathname === '/profile'} onClose={onClose} />
+            <NavItem to="/settings" icon={<Settings size={18} />} label="Settings" active={location.pathname === '/settings'} onClose={onClose} />
           </nav>
 
           <div className="mt-6 pt-4 border-t border-[#333]/60">
@@ -324,10 +334,11 @@ const Sidebar = () => {
   );
 };
 
-const NavItem = ({ to, icon, label, active = false }: { to: string; icon: React.ReactNode; label: string; active?: boolean }) => {
+const NavItem = ({ to, icon, label, active = false, onClose }: { to: string; icon: React.ReactNode; label: string; active?: boolean; onClose?: () => void }) => {
   return (
     <Link
       to={to}
+      onClick={onClose}
       className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all ${
         active
           ? 'bg-[#2a2a2a] text-[#f95e26] relative font-semibold shadow-sm border border-[#383838]'

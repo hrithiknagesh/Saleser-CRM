@@ -10,13 +10,14 @@ import {
   Settings as SettingsIcon,
   LogOut,
   ChevronDown,
-  CheckCheck
+  CheckCheck,
+  Menu
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { useTheme } from './ThemeContext';
 
-const Header = () => {
+const Header = ({ onMenuClick }: { onMenuClick?: () => void }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -114,14 +115,23 @@ const Header = () => {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <div className="h-16 flex items-center justify-between px-8 border-b border-[#333] bg-[#1a1a1a] relative select-none">
+    <div className="h-14 md:h-16 flex items-center justify-between px-4 md:px-8 border-b border-[#333] bg-[#1a1a1a] relative select-none">
       <div className="flex items-center gap-3">
-        <h1 className="text-xl font-bold text-white tracking-tight">{getPageTitle(location.pathname)}</h1>
+        {/* Hamburger – mobile only */}
+        <button
+          type="button"
+          onClick={onMenuClick}
+          className="md:hidden p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#242424] transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu size={20} />
+        </button>
+        <h1 className="text-base md:text-xl font-bold text-white tracking-tight truncate max-w-[140px] sm:max-w-none">{getPageTitle(location.pathname)}</h1>
       </div>
       
-      <div className="flex items-center gap-5">
-        {/* Global Search */}
-        <div className="relative" ref={searchRef}>
+      <div className="flex items-center gap-2 md:gap-5">
+        {/* Global Search – hidden on xs, visible from sm */}
+        <div className="relative hidden sm:block" ref={searchRef}>
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input 
             type="text" 
@@ -188,9 +198,9 @@ const Header = () => {
         <div className="relative" ref={createRef}>
           <button
             onClick={() => setShowCreate(!showCreate)}
-            className="bg-[#f95e26] hover:bg-[#e0521e] text-white text-xs font-semibold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all btn-3d shadow-3d-orange"
+            className="bg-[#f95e26] hover:bg-[#e0521e] text-white text-xs font-semibold px-2.5 md:px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all btn-3d shadow-3d-orange"
           >
-            <Plus size={15} /> Create
+            <Plus size={15} /><span className="hidden sm:inline">Create</span>
           </button>
           {showCreate && (
             <div className="absolute top-full mt-2 right-0 w-48 bg-[#1f1f1f] border border-[#333] rounded-xl shadow-2xl z-50 py-1 animate-in fade-in">
